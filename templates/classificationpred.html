@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Image Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3e9f2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--dark);
+            padding: 20px;
+        }
+
+        .upload-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            padding: 3rem 2rem;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .upload-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        h2 {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            border: 3px dashed #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(248, 249, 250, 0.5);
+            width: 100%;
+        }
+
+        .file-input-label:hover {
+            border-color: var(--accent);
+            background-color: rgba(72, 149, 239, 0.05);
+        }
+
+        .file-input-label i {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .file-input-label span {
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+
+        .file-input-label small {
+            color: #6c757d;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        input[type="file"] {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+            opacity: 0;
+        }
+        #detected-conditions ul {
+        list-style-type: none;
+        padding: 0;
+        }
+        #detected-conditions li {
+        background: #f0f0f0;
+        margin: 5px 0;
+        padding: 8px;
+        border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            padding: 1rem 3rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="submit"]:hover {
+            background: var(--secondary);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .preview-container {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border: 3px solid white;
+        }
+
+        .results-container {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            width: 100%;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results-title {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .prediction-result {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .confidence {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .loading {
+            display: none;
+            margin: 1rem 0;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .upload-container {
+                padding: 2rem 1.5rem;
+            }
+
+            h2 {
+                font-size: 1.6rem;
+            }
+
+            .file-input-label {
+                padding: 2rem 1.5rem;
+            }
+        }
+
+        /* Font Awesome icons (using Unicode as fallback) */
+        .file-input-label i::before {
+            content: "❤️";
+            font-style: normal;
+        }
+        .nav-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin: 30px 0;
+    }
+
+    .nav-btn {
+        padding: 10px 20px;
+        background-color: #4a6fa5;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        min-width: 100px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+        background-color: #3a5a8a;
+        transform: translateY(-2px);
+    }
+
+    .nav-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Style the clear button differently */
+    .nav-btn.clear-btn {
+        background-color: #f44336;
+    }
+
+    .nav-btn.clear-btn:hover {
+        background-color: #d32f2f;
+    }
+
+    /* Style the submit button to match */
+    .submit-btn {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background-color: #45a049;
+    }.nav-btn {
+    padding: 10px 20px;
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 100px;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background-color: #3a5a8a;
+    transform: translateY(-2px);
+}
+
+.nav-btn:active {
+    transform: translateY(0);
+}
+    body {
+        background: linear-gradient(rgba(245, 245, 245, 0.95), rgba(245, 245, 245, 0.95)),
+                    url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+    
+    .clear-btn-container {
+        position: absolute;
+        left: 20px;
+        bottom: 20px;
+    }
+    
+    .clear-btn {
+        padding: 8px 15px;
+        background-color: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .clear-btn:hover {
+        background-color: #d32f2f;
+    }
+
+    </style>
+<head>
+    <body>
+        <div class="upload-container">
+            <h2>Medical Image Analysis</h2>
+            <form id="analysis-form" method='POST' action="/classificationpred" enctype="multipart/form-data">
+                <div class="file-input-wrapper">
+                    <label class="file-input-label" for="image-upload">
+                        <i class="upload-icon"></i>
+                        <span>Choose an image file</span>
+                        <small>Supports: JPG, PNG</small>
+                    </label>
+                    <input type="file" id="image-upload" name="image" accept="image/*" required>
+                </div>
+                
+                <div class="preview-container" id="preview-container">
+                    <img class="preview-image" id="preview-image" src="#" alt="Preview">
+                </div>
+                
+                <div class="loading" id="loading">Analyzing image, please wait...</div>
+                
+                <div id="error-message" style="color: var(--danger); margin: 1rem 0; display: none;"></div>
+                
+                <input type="submit" value="Analyze Image">
+            </form>
+            
+            <div class="results-container" id="results-container">
+                <h3 class="results-title">Analysis Results</h3>
+                <div class="prediction-result">Condition: <span id="condition">Unknown</span></div>
+                <div class="confidence">Confidence: <span id="confidence-value">0%</span></div>
+                <div id="detected-conditions" style="margin-top: 1rem;"></div>
+            </div>
+            
+            <div id="detected-image-container" style="display: none; margin-top: 20px;">
+                <h3>Detected Image:</h3>
+                <img id="result-image" style="max-width: 100%; border-radius: 8px;">
+            </div>
+        </div>
+        <div class="clear-btn-container">
+            <button type="button" class="nav-btn" onclick="goPrevious()">← Previous</button>
+            <button class="clear-btn" onclick="clearForm()">Clear Form</button>
+        </div>
+        <script>
+            // Image preview handler
+            document.getElementById('image-upload').addEventListener('change', function(e) {
+                const previewContainer = document.getElementById('preview-container');
+                const previewImage = document.getElementById('preview-image');
+                
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        previewImage.src = e.target.result;
+                        previewContainer.style.display = 'block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    previewContainer.style.display = 'none';
+                }
+            });
+    
+            // Form submission handler
+            document.getElementById('analysis-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const fileInput = document.getElementById('image-upload');
+                const loading = document.getElementById('loading');
+                const errorElement = document.getElementById('error-message');
+                const resultsContainer = document.getElementById('results-container');
+                const detectedImageContainer = document.getElementById('detected-image-container');
+                const resultImage = document.getElementById('result-image');
+    
+                // Reset UI
+                errorElement.style.display = 'none';
+                resultsContainer.style.display = 'none';
+                detectedImageContainer.style.display = 'none';
+                loading.style.display = 'block';
+    
+                // Validate file was selected
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    errorElement.textContent = 'Please select an image first';
+                    errorElement.style.display = 'block';
+                    loading.style.display = 'none';
+                    return;
+                }
+    
+                // Create FormData and send
+                const formData = new FormData();
+                formData.append('image', fileInput.files[0]);
+    
+                fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => { throw err; });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loading.style.display = 'none';
+                    
+                    // Handle success
+                    if (data.error) throw new Error(data.error);
+                    
+                    // Update results
+                    document.getElementById('condition').textContent = data.condition || 'unknown';
+                    document.getElementById('confidence-value').textContent = data.confidence ? `${data.confidence}%` : 'N/A';
+                    
+                    // Show detected image (if available)
+                    if (data.detected_image) {
+                        resultImage.src = `data:image/jpeg;base64,${data.detected_image}`;
+                        detectedImageContainer.style.display = 'block';
+                    }
+                    
+                    resultsContainer.style.display = 'block';
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    errorElement.textContent = `Error: ${error.message || 'Failed to analyze image'}`;
+                    errorElement.style.display = 'block';
+                });
+            });
+            function goPrevious() {
+        window.history.back();
+    }
+
+    function goForward() {
+        window.history.forward();
+    }
+
+    function clearForm() {
+        // Reset form
+        document.getElementById('analysis-form').reset();
+        
+        // Hide preview and results
+        document.getElementById('preview-container').style.display = 'none';
+        document.getElementById('results-container').style.display = 'none';
+        document.getElementById('detected-image-container').style.display = 'none';
+        document.getElementById('error-message').style.display = 'none';
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+        </script>
+    </body>
+    </html>
+
+
+
+

@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stroke Risk Assessment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --danger: #f72585;
+            --success: #4cc9f0;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: url('https://images.unsplash.com/photo-1579684385127-1ef15d508118?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h3.marquee {
+            font-family: 'Montserrat', sans-serif;
+            background: var(--danger);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        p.intro {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: var(--light);
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--light);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.3);
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .submit-btn {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+
+        input[type="submit"] {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.4);
+        }
+
+        input[type="submit"]:hover {
+            background: #d91a6d;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(247, 37, 133, 0.6);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        .data-option {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(72, 149, 239, 0.1) 100%);
+        }
+        .option-card {
+            background: var(--light);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .header p {
+            color: var(--light);
+            font-size: 1.1rem;
+        }
+
+        /* Result section styles */
+        .result-container {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border-left: 5px solid var(--danger);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .result-title {
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .result-content {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: white;
+        }
+
+        .high-risk {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .moderate-risk {
+            color: #ff9f1c;
+            font-weight: 700;
+        }
+
+        .low-risk {
+            color: var(--success);
+            font-weight: 700;
+        }
+        .risk-score {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+.high-risk .risk-score {
+    color: #e74c3c;
+}
+
+.low-risk .risk-score {
+    color: #2ecc71;
+}
+.btn-submit, .btn-clear {
+    padding: 10px 20px;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-submit {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-submit:hover {
+    background-color: #45a049;
+}
+
+.btn-clear {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-clear:hover {
+    background-color: #d32f2f;
+}
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.nav-btn {
+    padding: 10px 20px;
+    background-color: #4a6fa5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 100px;
+    transition: all 0.3s ease;
+}
+
+.nav-btn:hover {
+    background-color: #3a5a8a;
+    transform: translateY(-2px);
+}
+
+.nav-btn:active {
+    transform: translateY(0);
+}
+
+/* Style the clear button differently */
+.nav-btn:nth-child(2) {
+    background-color: #f44336;
+}
+
+.nav-btn:nth-child(2):hover {
+    background-color: #d32f2f;
+}
+
+        .recommendations {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .recommendations h3 {
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animation for form elements */
+        .form-group {
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Create staggered animation */
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+        .form-group:nth-child(7) { animation-delay: 0.7s; }
+        .form-group:nth-child(8) { animation-delay: 0.8s; }
+        .form-group:nth-child(9) { animation-delay: 0.9s; }
+        .form-group:nth-child(10) { animation-delay: 1.0s; }
+        .form-group:nth-child(11) { animation-delay: 1.1s; }
+        .submit-btn { animation-delay: 1.2s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Stroke Risk Assessment</h1>
+            <p>Complete this form to evaluate your stroke risk factors</p>
+        </div>
+
+        <h3 class="marquee">
+            <marquee behavior="scroll" direction="left">Please provide accurate information about your health condition</marquee>
+        </h3>
+        
+        <p class="intro">You have to submit the form according to your health condition</p>
+        
+        <form id="heartDiseaseForm" onsubmit="return assessRisk(event)">
+            <div class="form-group">
+                <label>Sex</label>
+                <div class="radio-group">
+                    <input type="radio" name="sex" value="male" id="male">
+                    <label for="male">Male</label>
+                    <input type="radio" name="sex" value="female" id="female">
+                    <label for="female">Female</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" name="age" id="age" placeholder="Enter your age" min="1" max="120" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="chest_pain_type">Chest Pain Type</label>
+                <select id="chest_pain_type" name="chest_pain_type" required>
+                    <option value="">Select an option</option>
+                    <option value="TA">Typical Angina</option>
+                    <option value="ATA">Atypical Angina</option>
+                    <option value="NAP">Non-Anginal Pain</option>
+                    <option value="ASY">Asymptomatic</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="resting_bp">Resting Blood Pressure (mm Hg)</label>
+                <input type="number" name="resting_bp" id="resting_bp" placeholder="Enter resting BP" min="50" max="250" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="cholesterol">Cholesterol (mg/dl)</label>
+                <input type="number" name="cholesterol" id="cholesterol" placeholder="Enter cholesterol level" min="50" max="700" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Fasting Blood Sugar > 120 mg/dl</label>
+                <div class="checkbox-group">
+                    <input type="radio" name="fasting_bs" value="1" id="fasting_bs-yes">
+                    <label for="fasting_bs-yes">Yes</label>
+                    <input type="radio" name="fasting_bs" value="0" id="fasting_bs-no">
+                    <label for="fasting_bs-no">No</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="resting_ecg">Resting ECG</label>
+                <select id="resting_ecg" name="resting_ecg" required>
+                    <option value="">Select an option</option>
+                    <option value="Normal">Normal</option>
+                    <option value="ST">ST-T wave abnormality</option>
+                    <option value="LVH">Left ventricular hypertrophy</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="max_hr">Maximum Heart Rate</label>
+                <input type="number" name="max_hr" id="max_hr" placeholder="Enter max heart rate" min="60" max="220" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Exercise Induced Angina</label>
+                <div class="checkbox-group">
+                    <input type="radio" name="exercise_angina" value="Y" id="exercise_angina-yes">
+                    <label for="exercise_angina-yes">Yes</label>
+                    <input type="radio" name="exercise_angina" value="N" id="exercise_angina-no">
+                    <label for="exercise_angina-no">No</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="oldpeak">Oldpeak (ST depression)</label>
+                <input type="number" step="0.1" name="oldpeak" id="oldpeak" placeholder="Enter oldpeak value" min="0" max="10" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="st_slope">ST Slope</label>
+                <select id="st_slope" name="st_slope" required>
+                    <option value="">Select an option</option>
+                    <option value="Up">Upsloping</option>
+                    <option value="Flat">Flat</option>
+                    <option value="Down">Downsloping</option>
+                </select>
+            </div>
+            
+            <div class="submit-btn">
+                <input type="submit" value="Assess My Risk">
+            </div>
+        </form>
+
+        <!-- Result Section -->
+        <div id="resultContainer" class="result-container">
+            <h2 class="result-title">Your Stroke Risk Assessment</h2>
+            <div class="result-content" id="resultContent">
+                <!-- Results will be inserted here by JavaScript -->
+            </div>
+            <div class="recommendations">
+                <h3>Recommendations</h3>
+                <p id="recommendationsText"></p>
+            </div>
+        </div>
+    </div>
+    <div class="button-group">
+        <button type="button" class="nav-btn" onclick="goPrevious()">← Previous</button>
+        <button type="button" class="nav-btn" onclick="clearForm()">Clear</button>
+    </div>    
+    <script>
+        function assessRisk(event) {
+            event.preventDefault();
+            // Show loading state
+            const submitBtn = event.target.querySelector('input[type="submit"]');
+            const originalBtnText = submitBtn.value;
+            submitBtn.value = "Analyzing...";
+            submitBtn.disabled = true;
+            
+            // Collect form data
+            const formData = new FormData(event.target);
+            
+            // Send data to Flask backend
+            fetch('/assess_risk', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Convert the backend's risk level to match our frontend display
+                    const frontendRiskLevel = data.risk_level === 'high_risk' ? 'high' : 'low';
+                    displayResults(frontendRiskLevel, data.form_data, data.recommendations, data.risk_score);
+                } else {
+                    throw new Error(data.error || 'Unknown error occurred');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            })
+            .finally(() => {
+                submitBtn.value = originalBtnText;
+                submitBtn.disabled = false;
+            });
+            
+            return false;
+
+            function displayResults(riskLevel, formData, recommendations, riskScore) {
+    const resultContainer = document.getElementById('resultContainer');
+    const resultContent = document.getElementById('resultContent');
+    const recommendationsText = document.getElementById('recommendationsText');
+    
+    // Clear previous classes
+    resultContent.className = 'result-content';
+    
+    // Add appropriate class based on risk level
+    resultContent.classList.add(`${riskLevel}-risk`);
+    
+    // Format the risk score as percentage with 2 decimal places
+    const riskPercentage = (riskScore * 100).toFixed(2);
+    
+    // Create result text
+    let resultHTML = `
+        <p><strong>Age:</strong> ${formData.age} years</p>
+        <p><strong>Sex:</strong> ${formData.sex === 'male' ? 'Male' : 'Female'}</p>
+        <p><strong>Blood Pressure:</strong> ${formData.resting_bp} mm Hg</p>
+        <p><strong>Cholesterol:</strong> ${formData.cholesterol} mg/dl</p>
+        <p><strong>Risk Score:</strong> ${riskPercentage}%</p>
+        <p><strong>Risk Level:</strong> <span class="${riskLevel}-risk">${riskLevel.toUpperCase()} RISK</span></p>
+    `;
+    
+    // Add explanation based on risk level
+    if (riskLevel === 'high') {
+        resultHTML += `<p>Based on your assessment, you have a <strong class="high-risk">HIGH RISK</strong> (${riskPercentage}%) of stroke. Please consult a healthcare professional immediately.</p>`;
+    } else {
+        resultHTML += `<p>Based on your assessment, you have a <strong class="low-risk">LOW RISK</strong> (${riskPercentage}%) of stroke. Maintain your healthy habits!</p>`;
+    }
+    
+    // Create recommendations list from backend response
+    let recommendationsHTML = '<ul>';
+    recommendations.forEach(rec => {
+        recommendationsHTML += `<li>${rec}</li>`;
+    });
+    recommendationsHTML += '</ul>';
+    
+    resultContent.innerHTML = resultHTML;
+    recommendationsText.innerHTML = recommendationsHTML;
+    resultContainer.style.display = 'block';
+    
+    // Scroll to results
+    resultContainer.scrollIntoView({ behavior: 'smooth' });
+}
+        }
+        function goPrevious() {
+        window.history.back();
+    }
+
+    function goForward() {
+        window.history.forward();
+    }
+
+    function clearForm() {
+        document.querySelector('form').reset();
+        document.getElementById('resultContainer').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    </script>
+
+</body>
+</html>
