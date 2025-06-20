@@ -12,7 +12,7 @@ Stenosis detection is primarily useful for cardiologists, radiologists, and othe
 ![stenosis detection](https://github.com/plk456/Early-Disease-Detection-System/blob/master/Images/coronary_stenosis.png?raw=true)
 ## MOUTH CANCER:
 Mouth cancer, also known as oral cancer, is a type of cancer that develops in the tissues of the mouth, including the lips, tongue, floor of the mouth, cheeks, gums, and roof of the mouth. It can also affect the tonsils and salivary glands. This cancer arises when cells within these areas mutate and grow uncontrollably, forming a tumor. 
-
+![mouth cancer detection](https://github.com/plk456/Early-Disease-Detection-System/blob/master/Images/mouth_cancer.png?raw=true)
 ## Features
 o	Stenosis-detection – Used Yolov11 model to detect the coronary artery stenosis.
 
