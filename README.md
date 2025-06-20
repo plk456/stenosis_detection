@@ -9,7 +9,7 @@ in this project you can predict the risk level and risk score of heart failure b
 ## STENOSIS DETECTION:
 
 Stenosis detection is primarily useful for cardiologists, radiologists, and other healthcare professionals involved in diagnosing and managing cardiovascular diseases. It helps in early identification of blockages in arteries, which can lead to conditions like heart attacks and strokes. Accurate and timely detection of stenosis is crucial for initiating appropriate treatment and potentially preventing serious complications.  
-
+![stenosis detection](https://github.com/plk456/Early-Disease-Detection-System/blob/master/Images/coronary_stenosis.png?raw=true)
 ## MOUTH CANCER:
 Mouth cancer, also known as oral cancer, is a type of cancer that develops in the tissues of the mouth, including the lips, tongue, floor of the mouth, cheeks, gums, and roof of the mouth. It can also affect the tonsils and salivary glands. This cancer arises when cells within these areas mutate and grow uncontrollably, forming a tumor. 
 
