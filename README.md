@@ -37,11 +37,11 @@ you have to create a virtual environment
 
 # Clone 
 ```
-git clone https://github.com/plk456/AI-based-CAD-detection-and-heartfailure-prediction.git
+git clone https://github.com/plk456/Early-Disease-Detection-System.git
 ```
 ## Create directory
 ```
-cd AI-based-CAD-detection-and-heartfailure-prediction
+cd Early-Disease-Detection-System
 ```
 ## Creating virtual environment
 ```
